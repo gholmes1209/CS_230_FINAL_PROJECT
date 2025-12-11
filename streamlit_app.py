@@ -1,3 +1,12 @@
+"""Class: CS230--Section 5
+Name: Gabe Holmes
+Description: This is a final project that took much time and effort in an attempt to showcase
+how a dataset can creatively be used to help any user of such data to learn something new and
+be able to interact with the data effectively!
+I pledge that I have completed the programming assignment independently.
+I have not copied the code from a student or any source.
+I have not given my code to any student."""
+
 import statistics
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -6,6 +15,25 @@ import pydeck as pdk
 import altair as alt
 import numpy as np
 import math
+
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Times New Roman', serif !important;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Orbitron', sans-serif !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 
 def read_meteorite_landings(FILENAME):
     df = pd.read_csv(FILENAME)
@@ -62,17 +90,17 @@ def home_page(page):
     st.text("")
     st.text("")
 
-    st.header("First things first...What is a meteorite?")
     st.header("What are the different types of meteorites?")
-    st.header("What size crater would a meteorite cause if it hit the Earth? (Because why not?!)")
+    st.header("What size crater would a meteorite cause if it hit the Earth?")
+    st.subheader("Look through the sidebar to find out!")
 
     st.text("")
     st.text("")
 
     st.header("What is a meteorite?")
-    st.subheader("It's basically a rock that fell to Earth from space. But most meteorites come from asteroids that"
+    st.subheader("The most basic definition of a meteorite is: A rock that fell to Earth from space. But most meteorites come from asteroids that"
                  " are shattered upon entering our atmosphere. Many asteroids are in the asteroid belt between Mars and Jupiter,"
-                 " and Jupiter slings one at us every so often. Not very considerate.")
+                 " and Jupiter slings one at us every so often.")
     st.header("Below are the different types of meteorites you will learn about.")
     st.subheader("There are three main types of meteorites.")
 
@@ -116,12 +144,12 @@ def home_page(page):
     st.image("chondrite.jpg")
     st.subheader("Chondrites")
     st.write("Their name comes from the Greek 'chondres' meaning sand grains. They too have much historical/scientific value as they are the building "
-             "blocks of our solar system. But they pretty much just look like rock mosaics.")
+             "blocks of our solar system.")
 
     st.image("achondrite.jpg")
     st.subheader("Achondrites")
     st.write("Achondrites are igneous, meaning that at some point magma cooled to create these meteorites. They can tell us much about the internal "
-             "structure and formation of the planets, including Earth. (Does this remind you of your 6th grade Earth Science class yet?)")
+             "structure and formation of the planets, including Earth.")
 
     st.write("All information and reference photos were received from the following resources:"
              "\nhttps://www.nhm.ac.uk/discover/types-of-meteorites.html"
@@ -224,7 +252,8 @@ def map_page(df):
                 "<b>Lat:</b> {Lat}<br/>"
                 "<b>Lon:</b> {Lon}<br/>"
                 "<b>Class:</b> {Class}<br/>"
-                "<b>Mass (g):</b> {Mass (g)}",
+                "<b>Mass (g):</b> {Mass (g)}<br/>"
+                "<b>Year:</b> {Year}",
         "style": {"backgroundColor": "black", "color": "white"}
     }
 
@@ -256,6 +285,7 @@ def diagrams_page(df):
         max_value = year_max,
         value = (year_min, year_max)
     )
+
     #[FILTER2]
     df_filtered = df[(df['Year'] >= selected_year_range[0]) &
                      (df['Year'] <= selected_year_range[1])]
@@ -263,8 +293,10 @@ def diagrams_page(df):
     counts = df_filtered.groupby('Year').size().sort_index().reset_index(name='Count')
     chart = alt.Chart(counts).mark_bar().encode(
         x='Year:O',
-        y='Count:Q'
-    )
+        y='Count:Q',
+        color= alt.value("black"),
+        ).configure_axis(labelColor='black', gridColor='gray',titleColor='black')
+    
     #[CHART1]
     st.altair_chart(chart, use_container_width=True)
 
@@ -276,7 +308,6 @@ def diagrams_page(df):
 
 
     composition_counts = df['Composition'].value_counts()
-    total = composition_counts.sum()
     comp_order = composition_counts.index
     # [FUNCCALL2] - Called function 'classification_colors' twice in the program. One for each time a legend was used (map and pie chart).
     colors_dict = classification_colors()
@@ -394,14 +425,14 @@ def crater_calculator_page(page):
     # --- Display results
     st.subheader("Results")
     st.write(f"**Meteorite Type:** {meteorite_class}")
-    st.write(f"**Density (kg/m³):** {density:.0f}")
-    st.write(f"**Impact Velocity (m/s):** {velocity:.1f}")
-    st.write(f"**Impact Energy (Joules):** {E:.2e}")
-    st.write(f"**TNT Equivalent (tons):** {tnt_eq:.2f}")
-    st.write(f"**Dynamite Equivalent (sticks of 2MJ):** {dynamite_eq:.0f}")
-    st.write(f"**Transient Crater Diameter (m):** {D_transient:.2f}")
-    st.write(f"**Final Crater Diameter (m):** {D_final:.2f}")
-    st.write(f"**Estimated Crater Area (m²):** {crater_area:.2f}")
+    st.write(f"**Density (kg/m³):** {density:,.0f}")
+    st.write(f"**Impact Velocity (m/s):** {velocity:,.0f}")
+    st.write(f"**Impact Energy (Joules):** {E:,.2e}")
+    st.write(f"**TNT Equivalent (tons):** {tnt_eq:,.2f}")
+    st.write(f"**Dynamite Equivalent (sticks of 2MJ):** {dynamite_eq:,.0f}")
+    st.write(f"**Transient Crater Diameter (m):** {D_transient:,.2f}")
+    st.write(f"**Final Crater Diameter (m):** {D_final:,.2f}")
+    st.write(f"**Estimated Crater Area (m²):** {crater_area:,.2f}")
 
 
 def largest_and_smallest_meteorites(df):
@@ -426,10 +457,6 @@ def largest_and_smallest_meteorites(df):
 # Website used for meteorite density: http://www.meteorites.com.au/odds&ends/density.html
 
 def main():
-    """
-    Main function to run the Jeopardy data analysis program.
-    Processes a data file and provides a menu-based UI.
-    """
     FILENAME = "Meteorite_Landings.csv"
 
     # Read the data
